@@ -10,6 +10,8 @@ layout: default
           <a
             {% if page.cv_pdf contains '://' %}
               href="{{ page.cv_pdf }}"
+            {% elsif page.cv_pdf contains '/' %}
+              href="{{ page.cv_pdf | relative_url }}"
             {% else %}
               href="{{ page.cv_pdf | prepend: 'assets/pdf/' | relative_url }}"
             {% endif %}
@@ -61,6 +63,8 @@ layout: default
           <a
             {% if page.cv_pdf contains '://' %}
               href="{{ page.cv_pdf }}"
+            {% elsif page.cv_pdf contains '/' %}
+              href="{{ page.cv_pdf | relative_url }}"
             {% else %}
               href="{{ page.cv_pdf | prepend: 'assets/pdf/' | relative_url }}"
             {% endif %}
