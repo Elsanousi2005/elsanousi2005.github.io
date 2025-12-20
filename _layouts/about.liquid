@@ -2,16 +2,22 @@
 layout: default
 ---
 <div class="post">
-  <header class="post-header">
-    <h1 class="post-title">
-      {% if site.title == 'blank' %}
-        <span class="font-weight-bold">{{ site.first_name }}</span> {{ site.middle_name }}
-        {{ site.last_name }}
-      {% else %}
-        {{ site.title }}
-      {% endif %}
-    </h1>
-    <p class="desc">{{ page.subtitle }}</p>
+  <header class="post-header hero">
+    <div class="hero-content">
+      <h1 class="post-title">
+        {% if site.title == 'blank' %}
+          <span class="font-weight-bold">{{ site.first_name }}</span> {{ site.middle_name }}
+          {{ site.last_name }}
+        {% else %}
+          {{ site.title }}
+        {% endif %}
+      </h1>
+      <p class="desc hero-tagline">{{ page.subtitle }}</p>
+      <div class="hero-actions">
+        <a class="hero-btn hero-primary" href="{{ site.baseurl }}/projects/">Projects</a>
+        <a class="hero-btn hero-secondary" href="{{ site.baseurl }}/blog/">Blog</a>
+      </div>
+    </div>
   </header>
 
   <article>
