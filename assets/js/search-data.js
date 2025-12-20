@@ -83,6 +83,17 @@ ninja.data = [{
             window.location.href = "/al-folio/blog/2025/plotly/";
           
         },
+      },{id: "post-ethernet-driver-bring-up-template",
+        
+          title: "Ethernet Driver Bring-up Template",
+        
+        description: "Starter template for documenting Ethernet driver bring-up and testing.",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/al-folio/blog/2025/ethernet-driver-template/";
+          
+        },
       },{id: "post-a-post-with-image-galleries",
         
           title: "a post with image galleries",
@@ -451,7 +462,12 @@ ninja.data = [{
             },},{id: "news-a-simple-inline-announcement-with-markdown-emoji-sparkles-smile",
           title: 'A simple inline announcement with Markdown emoji! :sparkles: :smile:',
           description: "",
-          section: "News",},{id: "projects-project-1",
+          section: "News",},{id: "projects-zynq-7000-ethernet-driver",
+          title: 'Zynq-7000 Ethernet Driver',
+          description: "Bare-metal Ethernet MAC driver with DMA ring management and PHY bring-up for deterministic networking on Zynq-7000.",
+          section: "Projects",handler: () => {
+              window.location.href = "/al-folio/projects/10_project/";
+            },},{id: "projects-project-1",
           title: 'project 1',
           description: "with background image",
           section: "Projects",handler: () => {
