@@ -26,8 +26,19 @@ $max-content-width: {{ site.max_width }};
 
 // Post media sizing and table borders
 .post-figure {
+  display: block;
   width: 100%;
   max-width: 600px;
+  margin-left: 0;
+  margin-right: auto;
+}
+
+.post-figure-wide {
+  display: block;
+  width: 100%;
+  max-width: 520px;
+  margin-left: 0;
+  margin-right: auto;
 }
 
 .post-table {
