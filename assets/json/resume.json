@@ -1,0 +1,110 @@
+{
+  "basics": {
+    "name": "Mostafa Elsanousi",
+    "label": "B.S. Computer Engineering Student",
+    "email": "elsanousi2005@vt.edu",
+    "location": {
+      "city": "Blacksburg",
+      "region": "VA",
+      "postalCode": "24060",
+      "countryCode": "US"
+    },
+    "url": "https://elsanousi2005.github.io",
+    "summary": "B.S. Computer Engineering student at Virginia Tech (GPA 3.76) seeking an internship or research opportunity in VLSI circuit design and embedded systems, with particular interest in chip-scale integration, PCB design, and hardware architecture development.",
+    "profiles": [
+      {
+        "network": "LinkedIn",
+        "username": "mostafa-elsanousi",
+        "url": "https://www.linkedin.com/in/mostafa-elsanousi/"
+      },
+      {
+        "network": "GitHub",
+        "username": "Elsanousi2005",
+        "url": "https://github.com/Elsanousi2005"
+      }
+    ]
+  },
+  "education": [
+    {
+      "institution": "Virginia Tech Polytechnic Institute and State University",
+      "location": "Blacksburg, VA",
+      "studyType": "Bachelor of Science",
+      "area": "Computer Engineering",
+      "startDate": "2024-08-01",
+      "endDate": "2027-12-01",
+      "score": "GPA: 3.76 / 4.0",
+      "courses": [
+        "Circuits & Devices",
+        "Embedded Systems",
+        "Fundamentals of Digital Systems",
+        "Computational Engineering",
+        "Data Structures & Algorithms",
+        "Probability and Statistics for EE"
+      ]
+    }
+  ],
+  "work": [
+    {
+      "name": "Securis, Inc.",
+      "location": "Chantilly, VA",
+      "position": "ITAD Technician Intern",
+      "startDate": "2025-06-01",
+      "endDate": "2025-08-01",
+      "highlights": [
+        "Performed secure data erasure on storage devices using Blancco Drive Eraser in compliance with NIST standards.",
+        "Tested and refurbished desktops, laptops, and servers for resale, redeployment, or recycling.",
+        "Conducted hardware diagnostics and component upgrades (RAM, HDD/SSD, BIOS resets).",
+        "Assisted in inventory management by tagging and tracking IT assets with barcode systems.",
+        "Supported sustainable IT lifecycle management by routing equipment for reuse or disassembly based on condition."
+      ]
+    },
+    {
+      "name": "Magdi Algabani Group",
+      "location": "Dubai, UAE",
+      "position": "Cybersecurity & Embedded Systems Research Intern",
+      "startDate": "2021-05-01",
+      "endDate": "2022-08-01",
+      "highlights": [
+        "Assisted in development of a machine learning algorithm to detect phishing attacks, enhancing cybersecurity measures.",
+        "Gained hands-on experience in software and hardware engineering focused on computer architecture and embedded systems.",
+        "Collaborated in teams and helped explain complex technical concepts to diverse audiences and business partners."
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "name": "FPGA-Based Digital Signal Processing System",
+      "description": "Designed and implemented an 8-tap FIR low-pass filter on a Xilinx Artix-7 FPGA (Basys 3) using Verilog HDL for real-time digital signal filtering.",
+      "startDate": "2025-05-01",
+      "endDate": "2025-08-01",
+      "highlights": [
+        "Implemented 8-tap FIR low-pass filter with 200 kHz passband frequency.",
+        "Developed a pipelined filter architecture utilizing DSP slices; optimized resource utilization via symmetric tap pair addition.",
+        "Built a user interface with LCD output and color-coded LED indicators.",
+        "Integrated board switches for parameter adjustment and a 7-segment display for real-time output visualization; validated via simulation and hardware testing.",
+        "Achieved real-time processing with sub-millisecond latency during hardware testing."
+      ]
+    },
+    {
+      "name": "Zynq-7000 Ethernet Driver",
+      "description": "In progress: driver bring-up and PS/PL integration work for Ethernet on Zynq-7000.",
+      "highlights": [
+        "In progress - details coming soon on bring-up, register-level debugging, and performance testing."
+      ]
+    }
+  ],
+  "skills": [
+    {
+      "name": "Programming",
+      "keywords": ["C", "C++", "Python", "R", "Verilog (Structural/Dataflow)", "MATLAB"]
+    },
+    {
+      "name": "Tools & Software",
+      "keywords": ["Visual Studio Code", "Jupyter Notebook", "LTspice", "Intel Quartus Prime", "Vivado", "KiCad", "Magic VLSI", "Ngspice"]
+    },
+    {
+      "name": "Hardware",
+      "keywords": ["Arduino", "MSP432", "STM32", "Digilent Basys 3 FPGA"]
+    }
+  ]
+}
