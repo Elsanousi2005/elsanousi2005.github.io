@@ -4,13 +4,13 @@ const ninja = document.querySelector('ninja-keys');
 // add the home and posts menu items
 ninja.data = [{
     id: "nav-about",
-    title: "about",
+    title: "About",
     section: "Navigation",
     handler: () => {
       window.location.href = "/";
     },
   },{id: "nav-blog",
-          title: "blog",
+          title: "Blog",
           description: "",
           section: "Navigation",
           handler: () => {
@@ -23,7 +23,18 @@ ninja.data = [{
           handler: () => {
             window.location.href = "/resume/";
           },
-        },{id: "books-the-godfather",
+        },{id: "post-post-1-zc702-ps-ethernet-over-mio-and-ps-to-pl-axi-loopback",
+        
+          title: "Post 1: ZC702 PS Ethernet over MIO and PS to PL AXI Loopback...",
+        
+        description: "Minimal Zynq-7000 bring-up on ZC702 using PS GEM0 Ethernet and a simple PS-to-PL AXI loopback.",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2026/post-1-zc702-ps-ethernet-over-mio-and-ps-to-pl-axi-loopback/";
+          
+        },
+      },{id: "books-the-godfather",
           title: 'The Godfather',
           description: "",
           section: "Books",handler: () => {
