@@ -17,7 +17,7 @@ tags: [zynq, zc702, ethernet, lwip, axi, vivado, vitis, ps-pl]
 This project demonstrates a complete, minimal, and repeatable Zynq 7000 bring up flow on the ZC702 board in which the Processing System handles Ethernet networking entirely within the hard silicon, while the Programmable Logic implements a deliberately simple datapath that can be exercised from software through memory mapped registers. The design uses GEM0 Ethernet over the ZC702 onboard RGMII connection to the PHY and RJ45 jack, then uses the PS to PL AXI general purpose port to write a 32 bit value into the fabric and read back a transformed result. The transformation is intentionally trivial, a bitwise inversion, so correctness is unambiguous. On the software side, two complementary applications validate the system: a standard lwIP TCP echo server that confirms the Ethernet stack is operational, and a custom lwIP UDP service that performs a deterministic command response exchange by writing to and reading from the AXI GPIO registers in the PL.
 
 ![A block diagram of a Zynq-7000-based FPGA design showing AXI interconnect and GPIO path: - Processing System: "processing_system7_0" (ZYNQ7) with DDR and FIXED_IO pins to external memory/I/O; exposes M_AXI_GP0 and clocks/reset signals. - Reset/clock block: "rst_ps7_0_50M" providing slowest_sync_clk, mb_reset, ext_reset_in, aux_reset_in, dcm_locked and peripheral/reset outputs to the system. - AXI fabric: "axi_interconnect_0" (AXI Interconnect) with S00_AXI slave port and two master ports (M00_AXI, M01_AXI); connects the PS M_AXI_GP0 to peripherals. - Peripherals: - "axi_gpio_in": AXI GPIO slave (S_AXI) providing gpio_io_i31:0 input signals. - "axi_gpio_out": AXI GPIO slave (S_AXI) providing gpio_io_o31:0 output signals. - Logic/route: "util_vector_logic_0" (Utility Vector Logic) that takes Op131:0 and produces Res31:0, tying GPIO input to output logic. - Signal flow: PS -> AXI Interconnect -> AXI GPIO blocks -> utility vector logic -> feedback to GPIO; reset/clock nets from rst_ps7_0_50M feed the AXI and GPIO blocks. - External connections: DDR and FIXED_IO rails shown leaving the PS block. Overall the diagram shows a simple PS-driven AXI GPIO loopback/processing path with reset and clock management.](/assets/img/posts/post-1-zc702-ps-ethernet-over-mio-and-ps-to-pl-axi-loopback/image_002.png)
-{: .img-fluid .rounded .z-depth-1 .mx-auto .d-block style="width: 100%; max-width: 700px;" }
+{: .img-fluid .rounded .z-depth-1 .mx-auto .d-block .post-figure }
 
 *Figure 1: Full system block diagram showing PS Ethernet path and PS to PL register access path*
 
@@ -40,12 +40,12 @@ In this project, the separation of responsibilities is intentional. The Processi
 This architecture yields a clean mental model. If Ethernet fails, the issue is within PS configuration, PHY link, IP settings, or lwIP software. If Ethernet works but PL access fails, the issue is within clocks, resets, address mapping, bitstream programming, or AXI interconnect wiring. Because the PL datapath is trivial, functional ambiguity is removed.
 
 ![High-level block diagram of a hybrid PL/PS Ethernet system. - Left column - Programmable Logic (PL) - AXI SmartConnect - AXI GPIO OUT (address 0x4121_0000) - util_vector_logic (32-bit NOT) - AXI GPIO IN (address 0x4120_0000) - Dataflow: SmartConnect -> GPIO OUT -> 32-bit NOT -> GPIO IN - Bottom-left - Host PC - Tools: Python UDP client / netcat / telnet - Connects to on-board GigE PHY - Right - Processing System (PS) - Onboard PHY links to GEM0 Ethernet MAC (PS via MIO pins 16..27, MDIO via MIO 52..53) - GEM0 feeds lwIP raw API stack - lwIP exposes two services: - TCP Echo Server on port 6001 - UDP Inverter Server on port 5005 - Arrows show Ethernet path: Host PC -> On-board GigE PHY -> GEM0 MAC -> lwIP -> application servers. GPIO path is internal to PL via AXI.](/assets/img/posts/post-1-zc702-ps-ethernet-over-mio-and-ps-to-pl-axi-loopback/image_005.png)
-{: .img-fluid .rounded .z-depth-1 .mx-auto .d-block style="width: 100%; max-width: 700px;" }
+{: .img-fluid .rounded .z-depth-1 .mx-auto .d-block .post-figure }
 
 *Figure 2A: PS/PL partitioning: networking in PS, 32-bit inverter datapath in PL with AXI GPIO wrappers*
 
 ![Diagram of a PS/PL network-to-MMIO data flow and echo/reply paths: - Left: Host PC <-> on-board GigE PHY -> GEM0 MAC (PS) -> lwIP stack (PS). - lwIP forwards packets to two PS apps: "TCP echo (PS)" (sends echoed bytes back to Host) and "UDP inverter (PS)". - UDP inverter performs MMIO writes (label: "MMIO write W") via M_AXI_GP0 (AXI4-Lite) into the PL interconnect (SmartConnect). - SmartConnect -> AXI GPIO OUT at address 0x4121_0000 -> a 32-bit NOT block -> AXI GPIO IN at 0x4120_0000. - The PL GPIO read path returns data to the UDP inverter via MMIO read (label: "MMIO read R"); UDP inverter then replies to Host (label: "Reply WR (8 bytes)"). - Arrows indicate data flow: "Echoes bytes" from TCP echo back to Host; control/read/write MMIO labeled between PS and PL.](/assets/img/posts/post-1-zc702-ps-ethernet-over-mio-and-ps-to-pl-axi-loopback/image_006.png)
-{: .img-fluid .rounded .z-depth-1 .mx-auto .d-block style="width: 100%; max-width: 700px;" }
+{: .img-fluid .rounded .z-depth-1 .mx-auto .d-block .post-figure }
 
 *Figure 2B: End-to-end data flow: UDP/TCP traffic in PS and AXI-Lite MMIO to PL for [W][R] replies.*
 
@@ -58,7 +58,7 @@ Ethernet on the ZC702 is implemented as a two chip partnership. The Zynq Process
 This matters for the bring-up because you can conceptually split the Ethernet problem into two parts. Link status and auto negotiation involve the PHY and the management interface. Packet handling in lwIP involves the MAC driver and the software stack. A working system requires both pieces to be correctly wired and configured.
 
 ![- A block-diagram of the Ethernet datapath between a Zynq-7000 Processing System (PS) and the ZC702 board PHY. - Left: "Zynq-7000 Processing System (PS)" block. - Center (inside PS): "GEM0 Ethernet MAC" performing framing, buffering and driver functions. - Right (on ZC702 board): "GigE PHY" (analog + line interface) connected onward to "RJ45 + Magnetics". - Two labeled signal links between MAC and PHY: - RGMII data/clock (TX/RX) - bidirectional data and clock lines. - MDIO/MDC (management) - MDIO management interface.](/assets/img/posts/post-1-zc702-ps-ethernet-over-mio-and-ps-to-pl-axi-loopback/image_008.png)
-{: .img-fluid .rounded .z-depth-1 .mx-auto .d-block style="width: 100%; max-width: 700px;" }
+{: .img-fluid .rounded .z-depth-1 .mx-auto .d-block .post-figure }
 
 *Figure 3: Conceptual MAC to PHY diagram showing RGMII data signals and MDIO management channel*
 
@@ -75,7 +75,7 @@ MIO stands for Multiplexed I/O. These are dedicated pins on the Zynq package tha
 This mode is ideal when the board designer has already wired a peripheral, such as Ethernet or UART, directly to the Zynq MIO pins and expects the hardened peripheral to drive those pins.
 
 ![- Top-level: large box labeled "Processing System (PS)". - Inside PS, left box: "Hardened PS Peripheral (e.g., GEM0 / UART)". - Inside PS, right box: "MIO Pin Mux / PS I/O". - Arrow from the Hardened PS Peripheral to the MIO Pin Mux / PS I/O. - MIO Pin Mux / PS I/O arrows out to a separate box labeled "Package Pins / Board Traces". - Separate boxed note below: "No PL routing or logic required - PS peripheral drives pins directly", with a curved arrow pointing to the MIO Pin Mux. - Overall meaning: a PS peripheral connects through the PS MIO pin multiplexer directly to package/board pins without any PL (programmable logic) routing or additional logic.](/assets/img/posts/post-1-zc702-ps-ethernet-over-mio-and-ps-to-pl-axi-loopback/image_010.png)
-{: .img-fluid .rounded .z-depth-1 .mx-auto .d-block style="width: 100%; max-width: 700px;" }
+{: .img-fluid .rounded .z-depth-1 .mx-auto .d-block .post-figure }
 
 *Figure 4: Illustration of MIO routing showing a PS peripheral connected directly to package pins without traversing the PL*
 
@@ -84,7 +84,7 @@ This mode is ideal when the board designer has already wired a peripheral, such 
 EMIO stands for Extended Multiplexed I/O. In this mode, the PS peripheral signals do not go directly to package pins. Instead, the PS exposes those signals internally to the Programmable Logic, and the PL then routes them through FPGA fabric resources to chosen external pins or to internal logic. EMIO is therefore a PS peripheral routed through the PL. It introduces flexibility, because the PL can remap or condition signals and can bring PS peripherals out to pins that are not part of the fixed MIO set. However, it also introduces dependency: the PL must be configured and clocked correctly for those peripheral signals to reach the outside world.
 
 ![Diagram showing how a hardened PS peripheral is routed to external pins or PL logic via EMIO and PL routing: - Left box: Processing System (PS) - "Hardened PS Peripheral" -> arrow to "EMIO Interface" - EMIO Interface output continues into the right box: Programmable Logic (PL) - Inside PL: "PL Routing / Logic" receives the EMIO signal - A separate input labeled "Requires PL configuration + clocks" feeds into the PL routing/logic - PL Routing / Logic -> arrow to "External Pins / Internal PL Logic" (rightmost block) Overall: the PS peripheral uses the EMIO path into the PL, where configured PL routing/logic (and clocks/configuration) drive external pins or other PL logic.](/assets/img/posts/post-1-zc702-ps-ethernet-over-mio-and-ps-to-pl-axi-loopback/image_011.png)
-{: .img-fluid .rounded .z-depth-1 .mx-auto .d-block style="width: 100%; max-width: 700px;" }
+{: .img-fluid .rounded .z-depth-1 .mx-auto .d-block .post-figure }
 
 *Figure 5: Illustration of EMIO routing showing a PS peripheral passing through the PL before reaching external pins*
 
@@ -107,7 +107,7 @@ AXI is a family of bus protocols designed for high performance on chip communica
 In this project, the PS uses a memory mapped master port called the AXI general purpose port. Through that port, the PS can access addresses that are decoded to PL peripherals. Because AXI Lite is register oriented, the software side can be extremely simple. It can use ordinary 32 bit memory mapped I/O operations to write data and set direction bits.
 
 ![- A left-side ARM CPU (PS) block issues memory-mapped I/O (MMIO) 32-bit reads/writes. - Software is shown separately with the note "Software sees registers as memory-mapped addresses" and a dashed line to the MMIO block (software issues the MMIO accesses). - MMIO read/write goes to an "AXI GP Master (AXI4-Lite)" block. - The AXI master connects to an "Address Decode" block that maps addresses to PL registers. - The address-decode output goes to two PL register boxes: - "PL Register Write (e.g., GPIO DATA/TRI)" - writes from PS update PL registers. - "PL Register Read (returns current value)" - reads return the current PL register value back to software/PS (arrow returning along the bottom). - Overall the diagram shows the PS/software performing MMIO accesses over an AXI4-Lite GP master, an address decoder in PL selecting registers, and PL register read/write paths back to the CPU.](/assets/img/posts/post-1-zc702-ps-ethernet-over-mio-and-ps-to-pl-axi-loopback/image_013.png)
-{: .img-fluid .rounded .z-depth-1 .mx-auto .d-block style="width: 100%; max-width: 700px;" }
+{: .img-fluid .rounded .z-depth-1 .mx-auto .d-block .post-figure }
 
 *Figure 6: Conceptual diagram of an AXI Lite register transaction from software to a PL peripheral*
 
@@ -116,7 +116,7 @@ In this project, the PS uses a memory mapped master port called the AXI general 
 The Programmable Logic design contains more than one AXI slave peripheral. There is an AXI GPIO block for the output register and an AXI GPIO block for the input register. The PS master port must be able to reach both. SmartConnect is the interconnect component that makes this clean. It provides address decoding and routing so that a single AXI master in the PS can access multiple AXI slave peripherals in the PL without manually constructing custom interconnect logic. In other words, SmartConnect acts as the switch fabric that connects the PS address space to multiple mapped peripherals.
 
 ![A block-diagram screenshot of an AXI interconnect and two AXI GPIO peripherals. - Central component: "smartconnect_0" (AXI SmartConnect) with ports S00_AXI, M00_AXI, M01_AXI, aclk and aresetn. - Two peripheral blocks on the right: "axi_gpio_out" and "axi_gpio_in" (both labeled AXI GPIO). - Each AXI GPIO shows an S_AXI interface with signals s_axi_aclk and s_axi_aresetn, and a GPIO port gpio_io_i31:0 / gpio_io_o31:0. - Yellow-highlighted bus traces show AXI master/slave connections between smartconnect_0 and the two AXI GPIO blocks. - Black lines represent clock/reset routing between the SmartConnect and the GPIO blocks.](/assets/img/posts/post-1-zc702-ps-ethernet-over-mio-and-ps-to-pl-axi-loopback/image_014.png)
-{: .img-fluid .rounded .z-depth-1 .mx-auto .d-block style="width: 100%; max-width: 700px;" }
+{: .img-fluid .rounded .z-depth-1 .mx-auto .d-block .post-figure }
 
 *Figure 7: Vivado block design screenshot emphasizing PS AXI master to SmartConnect to two AXI GPIO slaves*
 
@@ -137,7 +137,7 @@ This design choice has two practical benefits. First, it isolates connectivity a
 AXI GPIO peripherals present a small set of registers. Two of the most important are the data register and the tri state direction register. The direction register controls whether each bit is treated as an input or an output. For the output GPIO block, the software configures the direction so that all bits are outputs. For the input GPIO block, the software configures the direction so that all bits are inputs. Once directions are configured, writing the data register updates the output bus, and reading the data register returns the sampled input bus. This is the mechanism by which the PS effectively controls and observes PL signals using memory mapped I/O. Vivado assigns each AXI GPIO a base address in the system map; in this design the IN block is at 0x4120\_0000 and the OUT block is at 0x4121\_0000 (Figure 8). Within each GPIO, software accesses registers by base + offset, where DATA = 0x0 and TRI = 0x4 (Figure 9).
 
 ![The screenshot shows Xilinx Vivado (title bar: a project path and Vivado 2025.2) with the IP Integrator Block Design editor open and the Address Editor tab active. - Left pane: Flow Navigator (Project Manager, IP Integrator, Simulation, RTL Analysis, Synthesis, Implementation, Program & Debug). - Main area: "BLOCK DESIGN - design_1" Address Editor showing Network 0 (/processing_system7_0/Data). - Two AXI GPIO slaves listed: /axi_gpio_in/S_AXI and /axi_gpio_out/S_AXI, both S_AXI, each with 64K range and base addresses 0x4120_0000 and 0x4121_0000 (high addresses 0x4120_FFFF and 0x4121_FFFF). - Top toolbar, write_bitstream status indicator (green check), and bottom tabs (Tcl Console, Messages, Log, Reports, Design Runs) visible.](/assets/img/posts/post-1-zc702-ps-ethernet-over-mio-and-ps-to-pl-axi-loopback/image_016.png)
-{: .img-fluid .rounded .z-depth-1 .mx-auto .d-block style="width: 100%; max-width: 700px;" }
+{: .img-fluid .rounded .z-depth-1 .mx-auto .d-block .post-figure }
 
 *Figure 8: Vivado Address Editor showing AXI GPIO base addresses (IN @ 0x4120\_0000, OUT @ 0x4121\_0000)*
 
@@ -145,6 +145,7 @@ AXI GPIO peripherals present a small set of registers. Two of the most important
 | :---: | :---: | :---: | :---: |
 | **DATA** | 0x0 | R/W | Read input bus or drive output bus |
 | **TRI** | 0x4 | R/W | Direction bits (0 = output, 1 = input) |
+{: .table .table-bordered .post-table }
 
 *Table 1: AXI GPIO register offsets used in software (DATA=0x0, TRI=0x4).*
 
@@ -159,7 +160,7 @@ The first test is a standard lwIP TCP echo server example. It listens on a TCP p
 The second test is the project's custom lwIP UDP inverter application. This test is not interactive text. It defines a small binary protocol. The host sends exactly four bytes representing a 32 bit word in little endian byte order. The board writes that word into the output GPIO register, reads the inverted value from the input GPIO register, and replies with eight bytes containing the original word followed by the readback word. If the host receives a response and the second word equals the bitwise inversion of the first, then PS to PL register access is verified alongside networking.
 
 ![This is a block diagram of a ZC702-based networked PS/PL test setup showing TCP/UDP apps in the Zynq PS, an AXI-Lite MMIO path into PL GPIO logic, and host test clients. Key elements - Left: Zynq PS with GEM0 MAC + lwIP running: - TCP Echo Server (port 6001) - UDP Inverter App (port 5005) - Right: Zynq PL datapath: - AXI GPIO OUT -> 32-bit NOT -> AXI GPIO IN - PL readback returned to the UDP app via AXI-Lite read/write - Host PC (Linux): - TCP client (telnet / nc) to validate TCP echo (echoes same bytes) - UDP client (host_udp_inverter.py) sends little-endian 4-byte u32 datagrams; UDP app returns an 8-byte reply containing written and read data (WR) - Validation notes shown: - Basic: link, IP config, lwIP TCP loop (no PL access) - Full: networking + PS-PL AXI-Lite MMIO + PL inverter datapath Arrows indicate control/data flow: Ethernet -> lwIP apps -> AXI-Lite MMIO -> PL GPIO inverter -> readback -> host replies.](/assets/img/posts/post-1-zc702-ps-ethernet-over-mio-and-ps-to-pl-axi-loopback/image_018.png)
-{: .img-fluid .rounded .z-depth-1 .mx-auto .d-block style="width: 100%; max-width: 700px;" }
+{: .img-fluid .rounded .z-depth-1 .mx-auto .d-block .post-figure }
 
 *Figure 9: Testing architecture diagram showing the TCP echo test and the UDP inverter test and what each validates*
 
@@ -176,7 +177,7 @@ UDP, as used in the inverter application, is connectionless. The server binds to
 The two tests therefore serve different purposes. The TCP echo server demonstrates that Ethernet and lwIP are operational in a way that is easy to reproduce with generic tools and arbitrary payloads. The UDP inverter demonstrates that networking and PS to PL register access are working together in a deterministic, verifiable control loop.
 
 ![Top panel (UDP - datagrams) - Shows a client sending discrete datagrams (Datagram A, 4 bytes; Datagram B, 4 bytes) to an "Inverter Server". - Server processes each datagram independently and sends a reply per datagram. - Emphasizes message boundaries: each UDP packet is a separate unit. Bottom panel (TCP - stream) - Shows a client connected to an "Echo Server" over a byte stream. - A labeled box reads "Byte stream - no message boundaries". - Arrows indicate continuous, bidirectional flow: data is sent and echoed back, but message boundaries are not preserved. Overall point: UDP preserves per-datagram message boundaries with one reply per datagram; TCP provides a continuous byte stream without inherent message boundaries, so framing must be handled by the application.](/assets/img/posts/post-1-zc702-ps-ethernet-over-mio-and-ps-to-pl-axi-loopback/image_020.png)
-{: .img-fluid .rounded .z-depth-1 .mx-auto .d-block style="width: 100%; max-width: 700px;" }
+{: .img-fluid .rounded .z-depth-1 .mx-auto .d-block .post-figure }
 
 *Figure 10: Protocol comparison diagram showing TCP as a stream and UDP as message framed datagrams*
 
@@ -187,7 +188,7 @@ The two tests therefore serve different purposes. The TCP echo server demonstrat
 To validate the PL inverter without hardware, I built a simulation-only block design. The AXI VIP acts as a stand-in for the PS, issuing AXI-Lite reads and writes. Those transactions pass through SmartConnect and reach two AXI GPIO blocks -- one configured as output and one as input -- with a 32-bit NOT between them. I exported the clock and reset as external ports (clk\_in1\_0, ext\_reset\_in\_0) so the testbench could drive them directly. The proc\_sys\_reset and clocking wizard provide a realistic reset/clock environment, while the VIP gives full control of addresses and data from the testbench. This makes the simulation faithful to real AXI behavior but still simple and self-contained for regression testing. It should be noted that I configured the Clocking Wizard IP block reset to be active low as it is set to active high by default.
 
 ![This is a Vivado-style block diagram of an AXI-based embedded design. Key elements: - Left: external inputs - clk_in1_0 and ext_reset_in_0 feed clk_wiz_0 (Clocking Wizard) producing clk_out1 and locked. - proc_sys_reset_0 (Processor System Reset) takes the clocks and reset inputs and produces various resets (mb_reset, bus_struct_reset, peripheral_reset, interconnect_aresetn, peripheral_aresetn). - Center: AXI master and interconnect - axi_vip_0 (AXI Verification IP) as an AXI master (M_AXI) connected to smartconnect_0. - smartconnect_0 (AXI SmartConnect) routes AXI transactions between the master and AXI peripherals. - Right: AXI peripherals and logic - Two AXI GPIO blocks: axi_gpio_in and axi_gpio_out connected as AXI slaves to the SmartConnect. - A utility block util_vector_logic_0 (labelled "Discontinued") performing vector logic on the GPIO outputs; its Res31:0 driven by the GPIO outputs (Op31:0). - AXI control signals (S_AXI/M_AXI, aclk, aresetn, gpio_io_o/gpio_io_i) interconnect the modules; reset/clock nets from proc_sys_reset_0 and clk_wiz_0 are distributed to the AXI IPs.](/assets/img/posts/post-1-zc702-ps-ethernet-over-mio-and-ps-to-pl-axi-loopback/image_022.png)
-{: .img-fluid .rounded .z-depth-1 .mx-auto .d-block style="width: 100%; max-width: 700px;" }
+{: .img-fluid .rounded .z-depth-1 .mx-auto .d-block .post-figure }
 
 *Figure 11: Simulation-only block design for AXI-Lite verification (AXI VIP -> SmartConnect -> AXI GPIO IN/OUT with inverter)*
 
@@ -199,20 +200,21 @@ A 100 MHz clock is generated in the testbench (always #5 clk\_in1 = ~clk\_in1;),
 | 0xFFFFFFFF | 0x00000000 |
 | 0x12345678 | 0xEDCBA987 |
 | 0xA5A5A5A5 | 0x5A5A5A5A |
+{: .table .table-bordered .post-table }
 
 *Table 2: AXI GPIO inverter test vectors and expected readback*
 
 On a successful run, the TCL console shows PASS messages for each vector followed by $finish, confirming that the AXI GPIO write/read path and the PL inverter are both functioning as seen in the figure below.
 
 ![Screenshot of Xilinx Vivado (2025.2) showing a simulation workspace. Key visible items: - Left pane: Flow Navigator with sections like Project Manager, IP Integrator, Simulation, RTL Analysis, Synthesis, Implementation, Program and Debug. - Center-left: Sources/Hierarchy panel listing design files (axi_gpio_tb_wrapper, design_1_wrapper) and Simulation Sources (tb_axi_gpio_tb.sv). - Center-top: Main toolbar and simulation controls; simulation mode indicated as "SIMULATION - Behavioral Simulation - Functional - sim_1". - Center-right: Text editor open on tb_axi_gpio_tb.sv (SystemVerilog testbench) with a highlighted line and visible code for driving and checking AXI GPIO transfers. - Bottom: Tcl Console / Messages pane showing simulation output lines like "PASS: wrote 00000000 read ffffffff", several PASS messages, and a finish message with simulation time and file/line reference. - Right-top status: "Synthesis and Implementation Out-of-date" indicator.](/assets/img/posts/post-1-zc702-ps-ethernet-over-mio-and-ps-to-pl-axi-loopback/image_023.png)
-{: .img-fluid .rounded .z-depth-1 .mx-auto .d-block style="width: 100%; max-width: 700px;" }
+{: .img-fluid .rounded .z-depth-1 .mx-auto .d-block .post-figure }
 
 *Figure 12: XSim TCL console showing AXI-VIP PASS messages and end-of-simulation checks*
 
 Figure 13 highlights the key AXI-Lite signals from the VIP master. clk\_in1 is the 100MHz testbench clock; ext\_reset is the active-low reset driven by the testbench; aclk is the AXI clock inside the BD (from the clocking wizard). m\_axi\_wdata[31:0] is the data written to GPIO OUT, m\_axi\_araddr[31:0] is the read address for GPIO IN, and m\_axi\_rdata[31:0] is the returned read data. resp[1:0] shows the AXI response code for each transaction, and rdata[31:0] is the testbench's captured readback used in the comparison check.
 
 ![- Screenshot of a digital waveform viewer (testbench file name shown: tb_axi_gpio_tb_behav.wcfg). - Left column: signal list and current hex values (clk_in1, ext_reset, resp1:0, rdata31:0, aclk, m_axi_araddr31:0, m_axi_wdata31:0, m_axi_rdata31:0, etc.). - Main pane: time axis in nanoseconds (0 -> 4,610,000 ns) and vertical grid lines. - Waveforms: clock signals (green) toggling, reset and response lines, and several bus traces shown as green/red waveforms with annotated data values like 5a5a5a5a, xxxxxxxx, ffffffff, 00000000, edcba987. - Typical viewer UI elements: zoom/toolbar at top, signal-value column between list and waveform.](/assets/img/posts/post-1-zc702-ps-ethernet-over-mio-and-ps-to-pl-axi-loopback/image_024.png)
-{: .img-fluid .rounded .z-depth-1 .mx-auto .d-block style="width: 100%; max-width: 700px;" }
+{: .img-fluid .rounded .z-depth-1 .mx-auto .d-block .post-figure }
 
 *Figure 13: Behavioral simulation waveform showing AXI-Lite writes to GPIO OUT and reads from GPIO IN returning the inverted data.*
 

@@ -23,3 +23,18 @@ $max-content-width: {{ site.max_width }};
   "tabler-icons/tabler-icons-filled.scss",
   "tabler-icons/tabler-icons-outline.scss"
 ;
+
+// Post media sizing and table borders
+.post-figure {
+  width: 100%;
+  max-width: 600px;
+}
+
+.post-table {
+  border: 1px solid #d0d0d0;
+}
+
+.post-table th,
+.post-table td {
+  border: 1px solid #d0d0d0;
+}
