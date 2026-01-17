@@ -27,16 +27,14 @@ $max-content-width: {{ site.max_width }};
 // Post media sizing and table borders
 .post-figure {
   display: block;
-  width: 100%;
-  max-width: 600px;
+  max-width: 700px;
   margin-left: 0;
   margin-right: auto;
 }
 
 .post-figure-wide {
   display: block;
-  width: 100%;
-  max-width: 520px;
+  max-width: clamp(320px, 60vw, 480px);
   margin-left: 0;
   margin-right: auto;
 }
