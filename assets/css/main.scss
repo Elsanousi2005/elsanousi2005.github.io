@@ -39,10 +39,19 @@ $max-content-width: {{ site.max_width }};
   margin-right: auto;
 }
 
+.post-figure-wide-xl {
+  display: block;
+  max-width: clamp(360px, 70vw, 700px);
+  margin-left: 0;
+  margin-right: auto;
+}
+
 .post-figure img,
 .post-figure-wide img,
+.post-figure-wide-xl img,
 img.post-figure,
-img.post-figure-wide {
+img.post-figure-wide,
+img.post-figure-wide-xl {
   max-width: 100%;
   height: auto;
   width: auto;
