@@ -396,7 +396,7 @@ Option B:
 We can also test the UDP inverter using netcat with hexdump to see the raw bytes on the wire. This is an optional alternative to the Python client, but it is equally valid for confirming the protocol framing and end-to-end inversion:
 
 ```bash
-echo -n -e '\x78\x56\x34\x12' | nc -u -w 3 192.168.1.10 5005 | hexdump -v -e '1/1 "%02x
+echo -n -e '\x78\x56\x34\x12' | nc -u -w 3 192.168.1.10 5005 | hexdump -v -e '1/1 "%02x"'; echo
 ```
 
 Although the board replies essentially immediately, nc -u -w 3 keeps the socket open until the timeout expires, so hexdump does not print the bytes until netcat closes. By contrast, a TCP nc session stays interactive and shows echoed data as soon as it arrives, which is why the TCP test feels instant while the UDP one appears slightly delayed.
