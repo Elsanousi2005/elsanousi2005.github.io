@@ -34,7 +34,7 @@ $max-content-width: {{ site.max_width }};
 
 .post-figure-wide {
   display: block;
-  max-width: clamp(320px, 60vw, 480px);
+  max-width: clamp(300px, 50vw, 420px);
   margin-left: 0;
   margin-right: auto;
 }
