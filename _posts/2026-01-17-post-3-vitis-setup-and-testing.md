@@ -19,9 +19,9 @@ tags: [zynq, zc702, ethernet, lwip, axi, vivado, vitis, ps-pl]
 
 All project materials for this Ethernet bring-up are in my repository: [ZC702 Ethernet Bring-up Repository](https://github.com/Elsanousi2005/zc702-ps-ethernet-udp-gpio-inverter).
 
-It includes the Vivado project (.xpr), the block design, exported hardware (.xsa/.hwh), the Vitis bare-metal sources for both the TCP echo example and the UDP inverter application, plus the host-side Python script used to send UDP test vectors.
+It includes the Vivado project (`.xpr`), the block design, exported hardware (`.xsa`/`.hwh`), the Vitis bare-metal sources for both the TCP echo example and the UDP inverter application, plus the host-side Python script used to send UDP test vectors.
 
-You can open the hardware project directly in Vivado (File -> Open Project -> select the .xpr).
+You can open the hardware project directly in Vivado (File -> Open Project -> select the `.xpr`).
 
 ![Image: image_002](/assets/img/posts/post-3-vitis-setup-and-testing/image_002.png)
 {: .img-fluid .rounded .z-depth-1 .d-block .post-figure-wide-xl }
@@ -51,8 +51,8 @@ If both fail, focus on link, IP configuration, lwIP initialization, or host netw
 
 Before starting Vitis bring up, ensure you have:
 
-1. A Vivado exported hardware handoff generated from the implemented design (.xsa).
-2. The corresponding bitstream from the same Vivado build (.bit).
+1. A Vivado exported hardware handoff generated from the implemented design (`.xsa`).
+2. The corresponding bitstream from the same Vivado build (`.bit`).
 3. The Vitis application sources for the TCP echo server and the UDP inverter service.
 4. A host side testing environment, ideally a Linux PC with netcat, hexdump, and Python 3 available.
 
@@ -60,7 +60,7 @@ A key bring up rule is to treat the XSA and the bitstream as a matched pair from
 
 ### 2.2. Host NIC Static IPv4 Configuration
 
-For a direct PC to board cable, the host Ethernet interface must be placed on the same IPv4 subnet as the ZC702. In this project, the board uses a static address of 192.168.1.10/24, so a typical host address is 192.168.1.20/24 with a 255.255.255.0 netmask. A gateway is optional for a direct link and can be left blank.
+For a direct PC to board cable, the host Ethernet interface must be placed on the same IPv4 subnet as the ZC702. In this project, the board uses a static address of `192.168.1.10/24`, so a typical host address is `192.168.1.20/24` with a `255.255.255.0` netmask. A gateway is optional for a direct link and can be left blank.
 
 1. Open Settings on Ubuntu, then select Network in the left sidebar.
 2. Under Wired, identify the Ethernet connection that is physically connected to the ZC702.
@@ -76,8 +76,8 @@ For a direct PC to board cable, the host Ethernet interface must be placed on th
 {: .img-fluid .rounded .z-depth-1 .d-block .post-figure }
 
 6. Add an IPv4 address for your host, for example:
-- Address: 192.168.1.20
-- Netmask: 255.255.255.0
+- Address: `192.168.1.20`
+- Netmask: `255.255.255.0`
 - Gateway: (optional for direct link, you may leave it blank)
 7. Click Apply, then toggle the Wired connection off and back on if the settings do not take effect immediately.
 
@@ -128,7 +128,7 @@ In Vitis Unified IDE:
 ![Image: image_011](/assets/img/posts/post-3-vitis-setup-and-testing/image_011.png)
 {: .img-fluid .rounded .z-depth-1 .d-block .post-figure }
 
-**5. Select the ps7\_cortexa9\_0 target and choose a standalone domain.**
+**5. Select the `ps7_cortexa9_0` target and choose a standalone domain.**
 
 ![Image: image_012](/assets/img/posts/post-3-vitis-setup-and-testing/image_012.png)
 {: .img-fluid .rounded .z-depth-1 .d-block .post-figure }
@@ -143,12 +143,12 @@ Before creating either application, configure the Vitis platform so lwIP is incl
 
 #### **1. Enable lwIP (lwip220) in the platform**
 
-A. Open the platform component in Vitis. In the Components view, select the platform and open its settings ({}vitis-comp.json).
+A. Open the platform component in Vitis. In the Components view, select the platform and open its settings (`{}vitis-comp.json`).
 
 ![Image: image_014](/assets/img/posts/post-3-vitis-setup-and-testing/image_014.png)
 {: .img-fluid .rounded .z-depth-1 .d-block .post-figure }
 
-B. Ensure the lwip220 library is enabled under the standalone domain configuration under the Board Support Package (BSP) so lwIP is actually included in the BSP. Save the change and rebuild the platform so the generated BSP reflects the new library selection.
+B. Ensure the `lwip220` library is enabled under the standalone domain configuration under the Board Support Package (BSP) so lwIP is actually included in the BSP. Save the change and rebuild the platform so the generated BSP reflects the new library selection.
 
 ####
 
@@ -163,16 +163,16 @@ B. Ensure the lwip220 library is enabled under the standalone domain configurati
 
 #### **2. Make DHCP behavior explicit in BSP settings**
 
-Next, open the BSP settings panel for the same platform. The lwIP DHCP toggles here control what gets generated into lwipopts.h, which ultimately determines whether lwIP will attempt to request a DHCP lease.
+Next, open the BSP settings panel for the same platform. The lwIP DHCP toggles here control what gets generated into `lwipopts.h`, which ultimately determines whether lwIP will attempt to request a DHCP lease.
 
 For a direct PC-to-board Ethernet connection with no router or DHCP server, DHCP must be disabled. Otherwise the network stack can wait indefinitely for a lease that never arrives.
 
 In this project's platform configuration, set the following to false (if not already set to false by default):
 
-- lwip220\_dhcp = false
-- lwip220\_dhcp\_debug = false
-- lwip220\_dhcp\_options = false
-- lwip220\_lwip\_dhcp\_does\_acd\_check
+- `lwip220_dhcp = false`
+- `lwip220_dhcp_debug = false`
+- `lwip220_dhcp_options = false`
+- `lwip220_lwip_dhcp_does_acd_check`
 
 With DHCP disabled at the platform level, applications can use deterministic static addressing when their code assigns it.
 
@@ -181,7 +181,7 @@ If you are connected to a router and want DHCP instead, enable DHCP in the platf
 ![Image: image_016](/assets/img/posts/post-3-vitis-setup-and-testing/image_016.png)
 {: .img-fluid .rounded .z-depth-1 .d-block .post-figure }
 
- It is worth confirming the console routing in Vitis before building. In the platform view, open vitis-comp.json and check standalone\_stdin and standalone\_stdout under the standalone OS settings. These should point to UART1, which is the MIO-mapped UART on the ZC702 used for serial logs. This makes sure all xil\_printf output shows up on the UART terminal.
+ It is worth confirming the console routing in Vitis before building. In the platform view, open `vitis-comp.json` and check `standalone_stdin` and `standalone_stdout` under the standalone OS settings. These should point to `UART1`, which is the MIO-mapped UART on the ZC702 used for serial logs. This makes sure all `xil_printf` output shows up on the UART terminal.
 
 ![Image: image_017](/assets/img/posts/post-3-vitis-setup-and-testing/image_017.png)
 {: .img-fluid .rounded .z-depth-1 .d-block .post-figure }
@@ -222,7 +222,7 @@ In Vitis, select File -> then select New Example.
 
 ## **3. Name the application and select the platform**
 
-- Enter a non conflicting application name (for example lwip\_echo\_server\_baseline).
+- Enter a non conflicting application name (for example `lwip_echo_server_baseline`).
 - When prompted, select the platform component intended for the lwIP echo server baseline test.
 - The application domain will be generated automatically to match the platform domain.
 - Click Finish.
@@ -232,11 +232,11 @@ In Vitis, select File -> then select New Example.
 
 ## **4. Edit 1: Choose the TCP listening port**
 
-Open echo.c in the newly created lwIP Echo Server application. The Vitis lwIP echo server template defines the listening port on line 100 as:
+Open `echo.c` in the newly created lwIP Echo Server application. The Vitis lwIP echo server template defines the listening port on line 100 as:
 
-- unsigned port = 7; (line 100)
+- `unsigned port = 7;` (line 100)
 
-For this project, set the port to 6001 instead (for example, unsigned port = 6001;). Port selection is an application choice. The key requirement is simply that the server port in echo.c matches the port you use in host testing and, ideally, any corresponding UART banner text you include in your write up.
+For this project, set the port to `6001` instead (for example, `unsigned port = 6001;`). Port selection is an application choice. The key requirement is simply that the server port in `echo.c` matches the port you use in host testing and, ideally, any corresponding UART banner text you include in your write up.
 
 In this tutorial, the baseline TCP validation is performed on port 6001, so all TCP testing commands in this section will target 6001.
 
@@ -245,7 +245,7 @@ In this tutorial, the baseline TCP validation is performed on port 6001, so all 
 
 ## **5. Edit 2: Set a board specific MAC address (recommended best practice)**
 
-Open main.c and locate the MAC address definition on line 128. The stock example uses a template MAC address value that often still works in a single board, direct PC to board setup, because there are no other devices competing with the same MAC on that isolated link.
+Open `main.c` and locate the MAC address definition on line 128. The stock example uses a template MAC address value that often still works in a single board, direct PC to board setup, because there are no other devices competing with the same MAC on that isolated link.
 
 Even though it is not strictly required for an isolated test, we still replace the template MAC with a board specific MAC address. This is the correct long term practice for repeatability and reuse. If you later connect the board to a network with other devices or a DHCP server, duplicate MAC addresses can cause subtle failures such as ARP confusion or DHCP lease collisions. Using a unique MAC avoids those hard to debug issues and makes the setup robust across different network environments.
 
@@ -262,7 +262,7 @@ Even though it is not strictly required for an isolated test, we still replace t
 
 ## **8.Open the UART Serial Monitor (115200 8N1) and verify startup messages**
 
-In Vitis, open Vitis -> Serial Monitor and select the USB UART device for the board. In this project it appears as /dev/ttyUSB0 (Silicon Labs), which you can recognize by the manufacturer string. Set 115200 baud, 8 data bits, no parity, 1 stop bit (115200 8N1), then open the connection so the terminal is listening. After the terminal is open, run the application in Vitis. The server banner and status prints should then appear in the Serial Monitor output as the program executes.
+In Vitis, open Vitis -> Serial Monitor and select the USB UART device for the board. In this project it appears as `/dev/ttyUSB0` (Silicon Labs), which you can recognize by the manufacturer string. Set 115200 baud, 8 data bits, no parity, 1 stop bit (`115200 8N1`), then open the connection so the terminal is listening. After the terminal is open, run the application in Vitis. The server banner and status prints should then appear in the Serial Monitor output as the program executes.
 
 ![Image: image_027](/assets/img/posts/post-3-vitis-setup-and-testing/image_027.png)
 {: .img-fluid .rounded .z-depth-1 .d-block .post-figure }
@@ -274,11 +274,15 @@ In Vitis, open Vitis -> Serial Monitor and select the USB UART device for the bo
 
 First confirm basic reachability using:
 
-**ping 192.168.1.10**
+```bash
+ping 192.168.1.10
+```
 
 Then open a TCP session to the echo server using:
 
-**nc -v 192.168.1.10 6001**
+```bash
+nc -v 192.168.1.10 6001
+```
 
 Type a short line of text. You should see the same text echoed back by the board.
 
@@ -315,20 +319,20 @@ The host sends exactly 4 bytes representing a 32 bit word W in little endian ord
 
 ### 5.2. UDP protocol definition
 
-UDP port: 5005
-Request payload: 4 bytes, little endian unsigned 32 bit word
-Response payload: 8 bytes, concatenation of W and R, in the same byte ordering
-Length check behavior: if the request is not exactly 4 bytes, the service replies with the ASCII string BADLEN
+UDP port: `5005`
+Request payload: `4` bytes, little endian unsigned 32 bit word
+Response payload: `8` bytes, concatenation of W and R, in the same byte ordering
+Length check behavior: if the request is not exactly `4` bytes, the service replies with the ASCII string `BADLEN`
 
 
 <table style="width: 100%; border-collapse: collapse;">
   <thead>
     <tr>
-      <th style="border: 1px solid #d0d0d0; padding: 8px; text-align: center;"><strong>\1</strong></th>
-      <th style="border: 1px solid #d0d0d0; padding: 8px; text-align: center;"><strong>\1</strong></th>
-      <th style="border: 1px solid #d0d0d0; padding: 8px; text-align: center;"><strong>\1</strong></th>
-      <th style="border: 1px solid #d0d0d0; padding: 8px; text-align: center;"><strong>\1</strong></th>
-      <th style="border: 1px solid #d0d0d0; padding: 8px; text-align: center;"><strong>\1</strong></th>
+      <th style="border: 1px solid #d0d0d0; padding: 8px; text-align: center;"><strong>Message</strong></th>
+      <th style="border: 1px solid #d0d0d0; padding: 8px; text-align: center;"><strong>Direction</strong></th>
+      <th style="border: 1px solid #d0d0d0; padding: 8px; text-align: center;"><strong>Length (bytes)</strong></th>
+      <th style="border: 1px solid #d0d0d0; padding: 8px; text-align: center;"><strong>Payload Format</strong></th>
+      <th style="border: 1px solid #d0d0d0; padding: 8px; text-align: center;"><strong>Notes</strong></th>
     </tr>
   </thead>
   <tbody>
@@ -364,7 +368,7 @@ This response format is intentional. Returning both W and R allows the host to v
 #### 1. Create a platform component for the UDP inverter (import the same XSA as in the TCP section) and ensure lwIP is enabled and the BSP DHCP choice is set as intended for your setup.
 #### 2. Create an application component from your UDP inverter sources and select the UDP platform component.
 #### 3. Build the application to generate the ELF.
-#### 4. Open the Serial Monitor (115200 8N1), program the FPGA, and run the ELF on ps7\_cortexa9\_0.
+#### 4. Open the Serial Monitor (115200 8N1), program the FPGA, and run the ELF on `ps7_cortexa9_0`.
 #### 5. Confirm on UART that the banner prints and that the service reports it is listening on UDP port 5005.
 
 ![Image: image_034](/assets/img/posts/post-3-vitis-setup-and-testing/image_034.png)
@@ -374,21 +378,26 @@ This response format is intentional. Returning both W and R allows the host to v
 
 Start with a ping to confirm reachability:
 
+```bash
 ping 192.168.1.10
+```
 
 Option A
 
-Open a terminal on the host PC and run the client script from the repository. Expected readback is the bitwise inversion. For example, 0x12345678 becomes 0xEDCBA987.
+Open a terminal on the host PC and run the client script from the repository. Expected readback is the bitwise inversion. For example, `0x12345678` becomes `0xEDCBA987`.
 
+```bash
 cd ~/zc702-ps-ethernet-udp-gpio-inverter/host
-
-python3 host\_udp\_inverter.py 192.168.1.10 0x12345678
+python3 host_udp_inverter.py 192.168.1.10 0x12345678
+```
 
 Option B:
 
 We can also test the UDP inverter using netcat with hexdump to see the raw bytes on the wire. This is an optional alternative to the Python client, but it is equally valid for confirming the protocol framing and end-to-end inversion:
 
+```bash
 echo -n -e '\x78\x56\x34\x12' | nc -u -w 3 192.168.1.10 5005 | hexdump -v -e '1/1 "%02x
+```
 
 Although the board replies essentially immediately, nc -u -w 3 keeps the socket open until the timeout expires, so hexdump does not print the bytes until netcat closes. By contrast, a TCP nc session stays interactive and shows echoed data as soon as it arrives, which is why the TCP test feels instant while the UDP one appears slightly delayed.
 

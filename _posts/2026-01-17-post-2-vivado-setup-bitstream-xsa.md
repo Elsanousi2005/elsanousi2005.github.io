@@ -199,7 +199,7 @@ _Figure 13: Expected Run Block Automation prompt_
 <table style="width: 100%; border-collapse: collapse;">
   <thead>
     <tr>
-      <th style="border: 1px solid #d0d0d0; padding: 8px; text-align: center;"><strong>\1</strong></th>
+      <th style="border: 1px solid #d0d0d0; padding: 8px; text-align: center;"><strong>Legend</strong></th>
     </tr>
   </thead>
   <tbody>
