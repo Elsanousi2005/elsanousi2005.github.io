@@ -40,7 +40,7 @@ In this project, the separation of responsibilities is intentional. The Processi
 This architecture yields a clean mental model. If Ethernet fails, the issue is within PS configuration, PHY link, IP settings, or lwIP software. If Ethernet works but PL access fails, the issue is within clocks, resets, address mapping, bitstream programming, or AXI interconnect wiring. Because the PL datapath is trivial, functional ambiguity is removed.
 
 ![High-level block diagram of a hybrid PL/PS Ethernet system. - Left column - Programmable Logic (PL) - AXI SmartConnect - AXI GPIO OUT (address 0x4121_0000) - util_vector_logic (32-bit NOT) - AXI GPIO IN (address 0x4120_0000) - Dataflow: SmartConnect -> GPIO OUT -> 32-bit NOT -> GPIO IN - Bottom-left - Host PC - Tools: Python UDP client / netcat / telnet - Connects to on-board GigE PHY - Right - Processing System (PS) - Onboard PHY links to GEM0 Ethernet MAC (PS via MIO pins 16..27, MDIO via MIO 52..53) - GEM0 feeds lwIP raw API stack - lwIP exposes two services: - TCP Echo Server on port 6001 - UDP Inverter Server on port 5005 - Arrows show Ethernet path: Host PC -> On-board GigE PHY -> GEM0 MAC -> lwIP -> application servers. GPIO path is internal to PL via AXI.](/assets/img/posts/post-1-zc702-ps-ethernet-over-mio-and-ps-to-pl-axi-loopback/image_005.png)
-{: .img-fluid .rounded .z-depth-1 .d-block .post-figure-wide-xl }
+{: .img-fluid .rounded .z-depth-1 .d-block .post-figure-wide-xxl }
 
 _Figure 2A: PS/PL partitioning: networking in PS, 32-bit inverter datapath in PL with AXI GPIO wrappers_
 
