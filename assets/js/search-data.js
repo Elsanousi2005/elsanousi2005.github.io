@@ -23,7 +23,29 @@ ninja.data = [{
           handler: () => {
             window.location.href = "/resume/";
           },
-        },{id: "post-post-1-zc702-ps-ethernet-over-mio-and-ps-to-pl-axi-loopback",
+        },{id: "post-post-3-vitis-setup-and-testing-for-ps-ethernet-and-ps-to-pl-validation",
+        
+          title: "Post 3: Vitis Setup and Testing for PS Ethernet and PS to PL...",
+        
+        description: "This post covers the Vitis side of the ZC702 bring up. The goal is to validate Ethernet in two layers so that failures are diagnosable rather than ambiguous.",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2026/post-3-vitis-setup-and-testing/";
+          
+        },
+      },{id: "post-post-2-vivado-setup-bitstream-and-hardware-export-xsa",
+        
+          title: "Post 2: Vivado setup, bitstream, and hardware export (XSA)",
+        
+        description: "This post documents the Vivado hardware build for the ZC702 Ethernet bring up project. The design has two goals.",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2026/post-2-vivado-setup-bitstream-xsa/";
+          
+        },
+      },{id: "post-post-1-zc702-ps-ethernet-over-mio-and-ps-to-pl-axi-loopback",
         
           title: "Post 1: ZC702 PS Ethernet over MIO and PS to PL AXI Loopback...",
         
