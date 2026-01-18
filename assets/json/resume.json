@@ -86,10 +86,15 @@
       ]
     },
     {
-      "name": "Zynq-7000 Ethernet Driver",
-      "description": "In progress: driver bring-up and PS/PL integration work for Ethernet on Zynq-7000.",
+      "name": "ZC702 Zynq-7000 Ethernet Bring-Up and PS/PL Validation",
+      "description": "Completed end-to-end bring-up of PS Ethernet and PS-to-PL AXI datapath on ZC702 with verified host-side tests.",
+      "startDate": "2025-10-01",
+      "endDate": "2026-01-01",
       "highlights": [
-        "In progress - details coming soon on bring-up, register-level debugging, and performance testing."
+        "Enabled GEM0 over MIO with RGMII and MDIO, validated PHY link, and documented PS configuration in Vivado.",
+        "Built a PL loopback datapath using AXI GPIO OUT, bitwise inverter logic, AXI GPIO IN, and SmartConnect, with stable address map (0x4120_0000, 0x4121_0000).",
+        "Exported matching XSA/bitstream and configured Vitis platform with lwIP and static IP (DHCP disabled) for reproducible bring-up.",
+        "Verified PS networking with lwIP TCP echo (port 6001) and full-system UDP inverter protocol with host Python and netcat/hexdump tests."
       ]
     }
   ],
