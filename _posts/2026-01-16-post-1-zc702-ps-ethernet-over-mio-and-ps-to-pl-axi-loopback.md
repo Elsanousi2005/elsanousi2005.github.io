@@ -141,12 +141,33 @@ AXI GPIO peripherals present a small set of registers. Two of the most important
 
 _Figure 8: Vivado Address Editor showing AXI GPIO base addresses (IN @ 0x4120_0000, OUT @ 0x4121_0000)_
 
-| **Register** | **Offset** | **Access** |              **Meaning**               |
-| :----------: | :--------: | :--------: | :------------------------------------: |
-|   **DATA**   |    0x0     |    R/W     |   Read input bus or drive output bus   |
-|   **TRI**    |    0x4     |    R/W     | Direction bits (0 = output, 1 = input) |
 
-{: .table .table-bordered .post-table }
+<table style="width: 100%; border-collapse: collapse;">
+  <thead>
+    <tr>
+      <th style="border: 1px solid #d0d0d0; padding: 8px; text-align: center;">Register</th>
+      <th style="border: 1px solid #d0d0d0; padding: 8px; text-align: center;">Offset</th>
+      <th style="border: 1px solid #d0d0d0; padding: 8px; text-align: center;">Access</th>
+      <th style="border: 1px solid #d0d0d0; padding: 8px; text-align: center;">Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="border: 1px solid #d0d0d0; padding: 8px; text-align: center;">DATA</td>
+      <td style="border: 1px solid #d0d0d0; padding: 8px; text-align: center;">0x0</td>
+      <td style="border: 1px solid #d0d0d0; padding: 8px; text-align: center;">R/W</td>
+      <td style="border: 1px solid #d0d0d0; padding: 8px; text-align: center;">Read input bus or drive output bus</td>
+    </tr>
+    <tr>
+      <td style="border: 1px solid #d0d0d0; padding: 8px; text-align: center;">TRI</td>
+      <td style="border: 1px solid #d0d0d0; padding: 8px; text-align: center;">0x4</td>
+      <td style="border: 1px solid #d0d0d0; padding: 8px; text-align: center;">R/W</td>
+      <td style="border: 1px solid #d0d0d0; padding: 8px; text-align: center;">Direction bits (0 = output, 1 = input)</td>
+    </tr>
+  </tbody>
+</table>
+
+
 
 _Table 1: AXI GPIO register offsets used in software (DATA=0x0, TRI=0x4)._
 
@@ -195,14 +216,35 @@ _Figure 11: Simulation-only block design for AXI-Lite verification (AXI VIP -> S
 
 A 100 MHz clock is generated in the testbench (always #5 clk_in1 = ~clk_in1;), and reset is asserted low for several cycles before being released. Once reset deasserts, the AXI VIP master issues a sequence of AXI-Lite writes to the GPIO OUT base address (0x4121_0000) and immediately reads back from the GPIO IN base address (0x4120_0000). Each read is checked against the expected inverted value using a small pass/fail scoreboard inside the do_one() task. Test vectors cover a mix of corner cases and patterns as seen in the table below.
 
-| **Write (W)** | **Expected Read (R = ~W)** |
-| :-----------: | :------------------------: |
-|  0x00000000   |         0xFFFFFFFF         |
-|  0xFFFFFFFF   |         0x00000000         |
-|  0x12345678   |         0xEDCBA987         |
-|  0xA5A5A5A5   |         0x5A5A5A5A         |
 
-{: .table .table-bordered .post-table }
+<table style="width: 100%; border-collapse: collapse;">
+  <thead>
+    <tr>
+      <th style="border: 1px solid #d0d0d0; padding: 8px; text-align: center;">Write (W)</th>
+      <th style="border: 1px solid #d0d0d0; padding: 8px; text-align: center;">Expected Read (R = ~W)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="border: 1px solid #d0d0d0; padding: 8px; text-align: center;">0x00000000</td>
+      <td style="border: 1px solid #d0d0d0; padding: 8px; text-align: center;">0xFFFFFFFF</td>
+    </tr>
+    <tr>
+      <td style="border: 1px solid #d0d0d0; padding: 8px; text-align: center;">0xFFFFFFFF</td>
+      <td style="border: 1px solid #d0d0d0; padding: 8px; text-align: center;">0x00000000</td>
+    </tr>
+    <tr>
+      <td style="border: 1px solid #d0d0d0; padding: 8px; text-align: center;">0x12345678</td>
+      <td style="border: 1px solid #d0d0d0; padding: 8px; text-align: center;">0xEDCBA987</td>
+    </tr>
+    <tr>
+      <td style="border: 1px solid #d0d0d0; padding: 8px; text-align: center;">0xA5A5A5A5</td>
+      <td style="border: 1px solid #d0d0d0; padding: 8px; text-align: center;">0x5A5A5A5A</td>
+    </tr>
+  </tbody>
+</table>
+
+
 
 _Table 2: AXI GPIO inverter test vectors and expected readback_
 
